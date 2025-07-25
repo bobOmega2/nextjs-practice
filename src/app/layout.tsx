@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Navigation from "../components/navigation";
+
+
 import "./globals.css";
-import { Navigation } from "./components/navigation";
 
 // Load custom Google fonts
 const geistSans = Geist({
@@ -31,18 +33,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* Header appears on all pages */}
-        <header className="bg-slate-900 text-white p-4 text-center">
-          <Navigation />
-          {/*<p>Welcome to Next.js 15 Crash Course</p>*/}
-        </header>
+        {/* Navigation bar at the top appears on all pages */}
+        <Navigation/>
 
         {/* Page-specific content gets injected here */}
         {children}
 
         {/* Footer appears on all pages */}
         <footer className="bg-slate-900 text-white p-4 text-center">
-          Codevolution
+          Devesh
         </footer>
       </body>
     </html>
