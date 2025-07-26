@@ -17,8 +17,8 @@ const Navigation = () => {
       </Link>
 
       {/* Link to a sample article */}
-      <Link href="/article/1" className="hover:underline hover:font-bold">
-        Example Article
+      <Link href="/articles/" className="hover:underline hover:font-bold">
+        Explore Articles
       </Link>
     </nav>
   );
