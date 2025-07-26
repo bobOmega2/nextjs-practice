@@ -33,7 +33,7 @@ export default function ArticlePage({ params }: Props) {
           </p>
 
           <p>
-            Later, you'll fetch article content dynamically from an API or a database.
+            Later, you&#39;ll fetch article content dynamically from an API or a database.
             For now, this helps visualize what the layout might look like.
           </p>
 
