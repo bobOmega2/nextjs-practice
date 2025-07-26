@@ -17,9 +17,14 @@ const Navigation = () => {
       </Link>
 
       {/* Link to a sample article */}
-      <Link href="/articles/" className="hover:underline hover:font-bold">
+      <Link href="/articles" className="hover:underline hover:font-bold">
         Explore Articles
       </Link>
+
+      <Link href="/transparency" className="hover:underline hover:font-bold">
+       How It Works
+       </Link>
+       
     </nav>
   );
 };
