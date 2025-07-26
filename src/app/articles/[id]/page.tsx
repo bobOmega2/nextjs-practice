@@ -1,17 +1,20 @@
 // Dynamic article page showing full content for a given article ID
 // This uses a dynamic route ([id]) to display specific article content
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card" // shadcn UI components for styling
-
-// Define the expected props from Next.js for dynamic routing
-interface Props {
-  params: {
-    id: string; // This comes from the URL segment like /article/3 → id = "3"
-  };
-}
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"; // shadcn UI components for styling
 
 // Page component for individual articles
-export default function ArticlePage({ params }: Props) {
+// Uses async format as expected in Next.js 15+ dynamic routes
+export default async function ArticlePage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const { id } = params; // Extract the dynamic article ID from the URL
 
   return (
@@ -28,13 +31,14 @@ export default function ArticlePage({ params }: Props) {
         {/* Main article content section */}
         <CardContent className="space-y-4 text-gray-700">
           <p>
-            This is a placeholder article for ID <strong>{id}</strong>.
-            You can use this route to display detailed content for each article.
+            This is a placeholder article for ID <strong>{id}</strong>. You can
+            use this route to display detailed content for each article.
           </p>
 
           <p>
-            Later, you&#39;ll fetch article content dynamically from an API or a database.
-            For now, this helps visualize what the layout might look like.
+            Later, you&apos;ll fetch article content dynamically from an API or
+            a database. For now, this helps visualize what the layout might look
+            like.
           </p>
 
           <p>
