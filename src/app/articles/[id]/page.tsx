@@ -9,13 +9,13 @@ import {
 } from "@/components/ui/card"; // shadcn UI components for styling
 
 // Page component for individual articles
-// Uses async format as expected in Next.js 15+ dynamic routes
+// In Next.js 15+, dynamic params are passed as a Promise, so we await them
 export default async function ArticlePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = params; // Extract the dynamic article ID from the URL
+  const { id } = await params; // Await the dynamic segment (e.g., /articles/3 → id = "3")
 
   return (
     <main className="p-6 max-w-3xl mx-auto space-y-6">
@@ -23,9 +23,7 @@ export default async function ArticlePage({
       <Card>
         {/* Header section of the card with the article title */}
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">
-            Article #{id}
-          </CardTitle>
+          <CardTitle className="text-2xl font-bold">Article #{id}</CardTitle>
         </CardHeader>
 
         {/* Main article content section */}
