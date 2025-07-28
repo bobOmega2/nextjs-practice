@@ -1,8 +1,19 @@
 import Link from "next/link";
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from "@/components/ui/card";
 
-// Fetch tech news from your API route (server-side)
-async function fetchNewsArticles() {
+// Type definition for articles
+type Article = {
+  id?: string;
+  title: string;
+  description?: string;
+  url: string;
+  source?: {
+    name?: string;
+  };
+};
+
+// Fetches articles from the API
+async function fetchNewsArticles(): Promise<Article[]> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
   const res = await fetch(`${baseUrl}/api/news`, { cache: "no-store" });
   if (!res.ok) {
@@ -12,7 +23,7 @@ async function fetchNewsArticles() {
   return data.articles;
 }
 
-// Static navigation cards (unchanged)
+// Cards for the homepage navigation section
 const cards = [
   {
     title: "Latest Tech News",
@@ -37,27 +48,24 @@ const cards = [
   }
 ];
 
-
-// Main HomePage component
 export default async function HomePage() {
-  let articles = [];
+  let articles: Article[] = [];
+
   try {
     articles = await fetchNewsArticles();
   } catch (error) {
     console.error("Error fetching articles:", error);
   }
 
-  // Limit articles shown to 4
-  const limitedArticles = articles.slice(0, 3);
+  const limitedArticles = articles.slice(0, 3); // Only show 3 articles
 
   return (
-    
     <main className="p-6 max-w-6xl mx-auto space-y-10">
       <h1 className="text-3xl font-bold mb-6">Welcome to Tech News Bias Tracker</h1>
       <p className="text-gray-700 mb-2">This app helps you explore tech news with awareness of bias.</p>
       <p className="text-gray-600 mb-8">Use the navigation to rate articles or read sample articles.</p>
 
-      {/* Static navigation cards */}
+      {/* Navigation cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
         {cards.map((card) => (
           <Card key={card.title}>
@@ -76,32 +84,30 @@ export default async function HomePage() {
           </Card>
         ))}
       </div>
-      
-      {/* Articles grid */}
+
+      {/* News articles section */}
       {limitedArticles.length > 0 && (
         <>
           <h2 className="text-2xl font-semibold mb-6">Latest Technology Articles</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {limitedArticles.map((article: any, idx: number) => (
+            {limitedArticles.map((article, idx) => (
               <ArticleCard key={article.url || idx} article={article} />
             ))}
           </div>
         </>
       )}
-
-      
     </main>
   );
 }
 
-// ArticleCard component without image, shows text placeholder instead
-function ArticleCard({ article }: { article: any }) {
+// Card for a single article
+function ArticleCard({ article }: { article: Article }) {
   const articleId = article.id || encodeURIComponent(article.url);
 
   return (
     <Link href={`/articles/${articleId}`} className="group">
       <Card className="h-full flex flex-col transition-all hover:shadow-lg cursor-pointer">
-        {/* Text placeholder instead of image */}
+        {/* No image for now */}
         <div className="flex items-center justify-center h-48 bg-gray-100 text-gray-500 font-semibold">
           No Image Available
         </div>
@@ -112,7 +118,9 @@ function ArticleCard({ article }: { article: any }) {
         </CardHeader>
 
         <CardContent className="flex-grow">
-          <p className="text-sm text-gray-600 line-clamp-3">{article.description || "No description available."}</p>
+          <p className="text-sm text-gray-600 line-clamp-3">
+            {article.description || "No description available."}
+          </p>
         </CardContent>
 
         <CardFooter>
