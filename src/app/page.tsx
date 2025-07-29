@@ -14,7 +14,12 @@ type Article = {
 
 // Fetches articles from the API
 async function fetchNewsArticles(): Promise<Article[]> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
+  // if its running on vercel, use `https://${process.env.VERCEL_URL}`, else use localhost
+  const baseUrl =
+  process.env.NEXT_PUBLIC_BASE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
   const res = await fetch(`${baseUrl}/api/news`, { cache: "no-store" });
   if (!res.ok) {
     throw new Error("Failed to fetch news");
