@@ -1,72 +1,86 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from "@/components/ui/card";
 
-// Mock data - will be replaced with API data later
-const ARTICLES = [
-  {
-    id: "1",
-    title: "The Future of AI in Tech",
-    description: "Exploring AI's impact on industries",
-    imageUrl: "/placeholder-ai.jpg" // Replace with real images later
-  },
-  {
-    id: "2", 
-    title: "Web3: Revolution or Hype?",
-    description: "Decentralized tech analysis",
-    imageUrl: "/placeholder-web3.jpg"
-  },
-  {
-    id: "3",
-    title: "Sustainable Tech Solutions",
-    description: "Tech addressing climate change", 
-    imageUrl: "/placeholder-green.jpg"
-  }
-];
+// Type definition for articles
+type Article = {
+  id?: string;
+  title: string;
+  description?: string;
+  url: string;
+  source?: {
+    name?: string;
+  };
+};
 
-export default function ArticlesPage() {
+// Fetches articles from the API
+async function fetchNewsArticles(): Promise<Article[]> {
+
+  // if its running on vercel, use `https://${process.env.VERCEL_URL}`, else use localhost
+  const baseUrl =
+  process.env.NEXT_PUBLIC_BASE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
+  const res = await fetch(`${baseUrl}/api/news`, { cache: "no-store" });
+  if (!res.ok) {
+    throw new Error("Failed to fetch news");
+  }
+  const data = await res.json();
+  return data.articles;
+}
+
+
+export default async function HomePage() {
+  let articles: Article[] = [];
+
+  try {
+    articles = await fetchNewsArticles();
+  } catch (error) {
+    console.error("Error fetching articles:", error);
+  }
+
+  //const limitedArticles = articles.slice(0, 3); // Only show 3 articles
+
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      {/* Page header */}
-      <h1 className="text-3xl font-bold mb-8">Tech News Articles</h1>
+    <main className="p-6 max-w-6xl mx-auto space-y-10">
       
-      {/* Responsive card grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {ARTICLES.map((article) => (
-          <ArticleCard key={article.id} article={article} />
-        ))}
-      </div>
-    </div>
+      {/* News articles section */}
+      {articles.length > 0 && (
+        <>
+          <h2 className="text-2xl font-semibold mb-6">Latest Technology Articles</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {articles.map((article, idx) => (
+              <ArticleCard key={article.url || idx} article={article} />
+            ))}
+          </div>
+        </>
+      )}
+    </main>
   );
 }
 
-// Extracted card component for better readability
-function ArticleCard({ article }: { article: typeof ARTICLES[0] }) {
+// Card for a single article
+function ArticleCard({ article }: { article: Article }) {
+  const articleId = article.id || encodeURIComponent(article.url);
+
   return (
-    <Link href={`/articles/${article.id}`} className="group">
-      <Card className="h-full flex flex-col transition-all hover:shadow-lg">
-        
-        {/* Article image */}
-        <div className="relative h-48 bg-gray-100">
-          <Image
-            src={article.imageUrl}
-            alt={article.title}
-            fill
-            className="object-cover"
-            priority
-          />
+    <Link href={`/articles/${articleId}`} className="group">
+      <Card className="h-full flex flex-col transition-all hover:shadow-lg cursor-pointer">
+        {/* No image for now */}
+        <div className="flex items-center justify-center h-48 bg-gray-100 text-gray-500 font-semibold">
+          No Image Available
         </div>
-        
-        {/* Article content */}
+
         <CardHeader>
-          <CardTitle className="text-xl">{article.title}</CardTitle>
-          <CardDescription>{article.description}</CardDescription>
+          <CardTitle className="text-lg line-clamp-2">{article.title}</CardTitle>
+          <CardDescription>{article.source?.name || "Unknown Source"}</CardDescription>
         </CardHeader>
-        
+
         <CardContent className="flex-grow">
-          <p className="text-sm text-gray-600">Click to read and rate bias</p>
+          <p className="text-sm text-gray-600 line-clamp-3">
+            {article.description || "No description available."}
+          </p>
         </CardContent>
-        
+
         <CardFooter>
           <div className="text-sm text-primary font-medium">Read Article →</div>
         </CardFooter>
