@@ -1,48 +1,54 @@
-// Dynamic article page showing full content for a given article ID
-// This uses a dynamic route ([id]) to display specific article content
-
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"; // shadcn UI components for styling
+} from "@/components/ui/card";
 
-// Page component for individual articles
-// In Next.js 15+, dynamic params are passed as a Promise, so we await them
 export default async function ArticlePage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params; // Await the dynamic segment (e.g., /articles/3 → id = "3")
+  const { id } = await params;
+
+  // if its running on vercel, use `https://${process.env.VERCEL_URL}`, else use localhost
+  const baseUrl =
+  process.env.NEXT_PUBLIC_BASE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
+
+  // Fetch a single article data from your API
+  const res = await fetch(`${baseUrl}/api/news/${id}`, {
+    cache: "no-store", // ensures we always get the latest data
+  });
+  
+  console.log('Fetching article at:', `${baseUrl}/api/news/${id}`);
+
+  if (!res.ok) {
+    return (
+      <main className="p-6 max-w-3xl mx-auto text-red-600">
+        Failed to load article.
+      </main>
+    );
+  }
+
+  const article = await res.json();
 
   return (
     <main className="p-6 max-w-3xl mx-auto space-y-6">
-      {/* Article is wrapped in a card for clean layout and spacing */}
       <Card>
-        {/* Header section of the card with the article title */}
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Article #{id}</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            {article.title}
+          </CardTitle>
         </CardHeader>
 
-        {/* Main article content section */}
         <CardContent className="space-y-4 text-gray-700">
-          <p>
-            This is a placeholder article for ID <strong>{id}</strong>. You can
-            use this route to display detailed content for each article.
+          <p className="text-sm text-gray-500">
+            Published on {new Date(article.publishedAt).toLocaleDateString()}
           </p>
-
-          <p>
-            Later, you&apos;ll fetch article content dynamically from an API or
-            a database. For now, this helps visualize what the layout might look
-            like.
-          </p>
-
-          <p>
-            This page will eventually include sentiment analysis, bias ratings,
-            tags, and other rich content about the article.
-          </p>
+          <p>{article.content}</p>
         </CardContent>
       </Card>
     </main>

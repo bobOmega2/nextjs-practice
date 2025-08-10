@@ -3,14 +3,18 @@ import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription }
 
 // Type definition for articles
 type Article = {
-  id?: string;
+  id: string;
   title: string;
-  description?: string;
+  description: string;
+  content: string;
   url: string;
-  source?: {
-    name?: string;
-  };
-};
+  image: string;
+  publishedAt: string;
+  source: {
+    id: string;
+    name: string;
+    url: string;
+}};
 
 // Fetches articles from the API
 async function fetchNewsArticles(): Promise<Article[]> {
