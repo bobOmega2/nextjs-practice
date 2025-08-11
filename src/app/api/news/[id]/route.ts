@@ -1,5 +1,22 @@
 import { NextResponse } from "next/server";
 
+type ArticleSource = {
+  id: string;
+  name: string;
+  url: string;
+};
+
+type Article = {
+  id: string;
+  title: string;
+  description: string;
+  content: string;
+  url: string;
+  image: string;
+  publishedAt: string;
+  source: ArticleSource;
+};
+
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
@@ -11,10 +28,10 @@ export async function GET(
 
   try {
     const res = await fetch(endpoint);
-    const data = await res.json();
+    const data: { articles: Article[] } = await res.json();
 
     // Find article with matching id
-    const article = data.articles.find((a: any) => a.id === id);
+    const article = data.articles.find((a) => a.id === id);
 
     if (!article) {
       return NextResponse.json(
