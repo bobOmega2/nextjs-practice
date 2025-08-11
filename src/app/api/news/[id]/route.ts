@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 
 type ArticleSource = {
   id: string;
@@ -18,10 +18,10 @@ type Article = {
 };
 
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> } // Correct type for context
 ) {
-  const { id } = params;
+  const { id } = await context.params; // Await the params object
 
   const apiKey = process.env.GNEWS_API_KEY;
   const endpoint = `https://gnews.io/api/v4/top-headlines?lang=en&topic=technology&token=${apiKey}`;
