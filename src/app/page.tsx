@@ -35,7 +35,7 @@ const cards = [
     description: "Stay updated with the newest articles",
     content: "Discover the most recent tech headlines, handpicked for you.",
     action: "View News",
-    href: "/article"
+    href: "/articles"
   },
   {
     title: "Rate Articles",
