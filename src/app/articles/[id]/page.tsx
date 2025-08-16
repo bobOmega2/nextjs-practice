@@ -7,6 +7,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+import { getScales } from "@/constants/biasScales";
+import { BarChart, Bar, XAxis, YAxis, LabelList } from "recharts";
+import { Slider } from "@/components/ui/slider"
 
 export default async function ArticlePage({
   params,
@@ -26,21 +29,6 @@ export default async function ArticlePage({
     cache: "no-store", // ensures we always get the latest data
   });
   
-  // Bias scale values stored (harcoded for now, will be from a database later)
-  // This says: any object of type "BiasScale" must have these properties (name, minLabel, maxLabel, value)
-  type BiasScale = {
-  name: string;
-  minLabel: string;
-  maxLabel: string;
-  value: number; // value user selects
-};
-
-const biasScales: BiasScale[] = [
-  { name: "Social Issues", minLabel: "Progressive", maxLabel: "Traditional", value: 50 },
-  { name: "Economic", minLabel: "Left-leaning", maxLabel: "Right-leaning", value: 50 },
-  { name: "Cultural Perspectives", minLabel: "Inclusive", maxLabel: "Exclusive", value: 50 },
-  { name: "Technology", minLabel: "Progress", maxLabel: "Caution", value: 50 },
-];
 
 
   if (!res.ok) {
@@ -68,6 +56,24 @@ const biasScales: BiasScale[] = [
           </p>
 
           <p>{article.content.replace(/\[\d+ chars\]$/, '')}</p> 
+          
+{/* ALL BIAS SCALES STUFF BELOW */}
+
+{getScales(article.id).map((scale, idx) => (
+  <div key={idx} className="space-y-1">
+    <p className="font-semibold">{scale.name}</p>
+
+    <div className="flex items-center gap-2">
+      <span>{scale.minLabel}</span>
+      <Slider defaultValue={[scale.value]} max={100} step={1} disabled className="flex-1" />
+      <span>{scale.maxLabel}</span>
+    </div>
+
+    <p className="text-sm text-gray-500">Value: {scale.value}</p>
+  </div>
+))}
+
+{/* ALL BIAS SCALES STUFF ABOVE */}
 
           <a
             href={article.url}              // Destination URL from your article data
@@ -75,7 +81,7 @@ const biasScales: BiasScale[] = [
             rel="noopener noreferrer"       // Security & privacy best practice with target="_blank"
             className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors duration-200"
             >
-            Read More
+            Read More 
           </a>
 
         </CardContent>
