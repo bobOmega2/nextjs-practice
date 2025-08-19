@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { getScales } from '@/constants/biasScales';
 
+// TODO: Understand this file, and test it 
+
 type ArticleSource = {
   id: string;
   name: string;
@@ -58,6 +60,7 @@ export async function GET(
           userId: null, // default, not submitted by a user yet
         }))
       );
+      // returning simpler values for frontend to use (so we can display in the webiste)
       scores = defaultScores.map((scale) => ({
         articleId: id,
         scaleName: scale.name,

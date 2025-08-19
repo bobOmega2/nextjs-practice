@@ -39,7 +39,7 @@ export default async function ArticlePage({
     );
   }
 
-  const article = await res.json();
+  const { article, biasScores } = await res.json();
 
   return (
     <main className="p-6 max-w-3xl mx-auto space-y-6">
@@ -59,7 +59,7 @@ export default async function ArticlePage({
           
 {/* ALL BIAS SCALES STUFF BELOW */}
 
-{getScales(article.id).map((scale, idx) => (
+{biasScores.map((scale, idx) => (
   <div key={idx} className="space-y-1">
     <p className="font-semibold">{scale.name}</p>
 
