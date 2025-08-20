@@ -6,7 +6,7 @@
   // This says: any object of type "BiasScale" must have these properties (name, minLabel, maxLabel, value)
   type BiasScale = {
   articleId: string;
-  scaleName: string;
+  name: string;
   minLabel: string;
   maxLabel: string;
   value: number; 
@@ -21,10 +21,10 @@ function getRandomInt(max: number) {
 // Function that returns an array of BiasScale objects
 export function getScales(articleId: string): BiasScale[] {
   return [
-    { articleId, scaleName: "Social Issues", minLabel: "Progressive", maxLabel: "Traditional", value: 50 },
-    { articleId, scaleName: "Economic", minLabel: "Left-leaning", maxLabel: "Right-leaning", value: 50 },
-    { articleId, scaleName: "Cultural Perspectives", minLabel: "Inclusive", maxLabel: "Exclusive", value: 50 },
-    { articleId, scaleName: "Technology", minLabel: "Progress", maxLabel: "Caution", value: 50 },
+    { articleId, name: "Social Issues", minLabel: "Progressive", maxLabel: "Traditional", value: getRandomInt(100) },
+    { articleId, name: "Economic", minLabel: "Left-leaning", maxLabel: "Right-leaning", value: getRandomInt(100)  },
+    { articleId, name: "Cultural Perspectives", minLabel: "Inclusive", maxLabel: "Exclusive", value: getRandomInt(100)  },
+    { articleId, name: "Technology", minLabel: "Progress", maxLabel: "Caution", value: getRandomInt(100) },
   ];
 }
 
