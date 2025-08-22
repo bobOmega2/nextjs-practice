@@ -1,5 +1,6 @@
 // NOTE: LINK ORIGINAL URL AT BOTTOM OF PAGE ONCE MAIN ARTICLE TEXT IS CUT OFF
 
+
 import {
   Card,
   CardContent,
@@ -7,9 +8,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { getScales } from "@/constants/biasScales";
-import { BarChart, Bar, XAxis, YAxis, LabelList } from "recharts";
+
 import { Slider } from "@/components/ui/slider"
+import { ArticleBiasScore, Article} from "@/app/types";
+
 
 export default async function ArticlePage({
   params,
@@ -39,8 +41,8 @@ export default async function ArticlePage({
     );
   }
 
+  // Retrieving
   const { article, biasScores } = await res.json();
-
   return (
     <main className="p-6 max-w-3xl mx-auto space-y-6">
       <Card>
@@ -59,9 +61,9 @@ export default async function ArticlePage({
           
 {/* ALL BIAS SCALES STUFF BELOW */}
 
-{biasScores.map((scale, idx) => (
+{biasScores.map((scale: ArticleBiasScore, idx: number) => (
   <div key={idx} className="space-y-1">
-    <p className="font-semibold">{scale.name}</p>
+    <p className="font-semibold">{scale.scaleName}</p>
 
     <div className="flex items-center gap-2">
       <span>{scale.minLabel}</span>
