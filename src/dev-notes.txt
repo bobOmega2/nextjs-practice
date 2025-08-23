@@ -12,8 +12,12 @@ Session: 10:15 AM - 12:10 PM
 - Bias scores should be created at start
 
 📝 Next Session:
-- SIMPLIFY EVERYTHING!!
-- Write seed script to populate MongoDB
+- SIMPLIFY EVERYTHING - Anything not needed MUST go
+- Write seed script to populate MongoDB at startup
 - Test API routes with seeded data
-- Connect page rendering to API
+
+Later Goals: 
+- Add user reviews system
+- integrate AI for reviewing articles 
+- Add larger article catalog with different catagories
 
