@@ -9,4 +9,7 @@ export const GNEWS_ENDPOINT = `https://gnews.io/api/v4/top-headlines?lang=en&top
 
 export const DATABASE_NAME = "TechNewsBiasTrackerDB"; // The name of my current MongoDB database
 
-
+  // if its running on vercel, use `https://${process.env.VERCEL_URL}`, else use localhost
+export const BASE_URL =
+  process.env.NEXT_PUBLIC_BASE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");

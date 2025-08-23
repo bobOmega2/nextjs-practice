@@ -1,127 +1,67 @@
 // src/lib/articleHelpers.ts
 
 import clientPromise from '@/lib/mongodb';
-import { DATABASE_NAME, GNEWS_ENDPOINT } from '@/constants';
-import { Article, ArticleBiasScore } from '@/app/types';
-import { Db, WithId, Document } from "mongodb";
+import { DATABASE_NAME, GNEWS_ENDPOINT } from '@/constants/constants';
+import { Article, BiasScores, ArticleWithScores } from '@/app/types/types';
+import { Db } from "mongodb";
 
-/** 
- * Type representing an article combined with its bias scores 
- */
-export type ArticleWithScores = Article & { biasScores: ArticleBiasScore[] };
+/** ------------------------------ */
+/** 🔹 Utilities */
+/** ------------------------------ */
 
-/**
- * Helper: Generate a random integer between 0 (inclusive) and max (exclusive)
- */
-function getRandomInt(max: number): number {
-  return Math.floor(Math.random() * max);
-}
+const randomScore = (max = 100) => Math.floor(Math.random() * max);
 
-/**
- * Returns default bias scales for an article
- * Currently hardcoded; can later fetch from a DB or config
- */
-export function getScales(articleId: string): ArticleBiasScore[] {
-  return [
-    {
-      articleId: articleId,
-      scaleName: "Social Issues",
-      minLabel: "Progressive",
-      maxLabel: "Traditional",
-      value: getRandomInt(100),
-    },
-    {
-      articleId: articleId,
-      scaleName: "Economic",
-      minLabel: "Left-leaning",
-      maxLabel: "Right-leaning",
-      value: getRandomInt(100),
-    },
-    {
-      articleId: articleId,
-      scaleName: "Cultural Perspectives",
-      minLabel: "Inclusive",
-      maxLabel: "Exclusive",
-      value: getRandomInt(100),
-    },
-    {
-      articleId: articleId,
-      scaleName: "Technology",
-      minLabel: "Progress",
-      maxLabel: "Caution",
-      value: getRandomInt(100),
-    },
-  ];
-}
+export const getDefaultBiasScores = (articleId: string): BiasScores[] => [
+  { articleId, scaleName: "Social Issues", minLabel: "Progressive", maxLabel: "Traditional", value: randomScore(), submittedAt: new Date().toISOString(), userId: null },
+  { articleId, scaleName: "Economic", minLabel: "Left-leaning", maxLabel: "Right-leaning", value: randomScore(), submittedAt: new Date().toISOString(), userId: null },
+  { articleId, scaleName: "Cultural Perspectives", minLabel: "Inclusive", maxLabel: "Exclusive", value: randomScore(), submittedAt: new Date().toISOString(), userId: null },
+  { articleId, scaleName: "Technology", minLabel: "Progress", maxLabel: "Caution", value: randomScore(), submittedAt: new Date().toISOString(), userId: null },
+];
 
-/**
- * 1️⃣ Fetch articles from GNews API
- */
-export async function fetchArticles(): Promise<Article[]> {
-  const res = await fetch(GNEWS_ENDPOINT);
-  const data = await res.json();
-  return data.articles;
-}
+/** ------------------------------ */
+/** 🔹 MongoDB Helpers */
+/** ------------------------------ */
 
-/**
- * 2️⃣ Connect to MongoDB
- * @param dbName - Name of the database to connect to
- */
-export async function connectToMongoDB(dbName: string): Promise<Db> {
+export const getDB = async (dbName: string): Promise<Db> => {
   const client = await clientPromise;
   return client.db(dbName);
-}
+};
 
-/**
- * 3️⃣ Get bias scores for an article, or create default scores if missing
- * @param db - MongoDB database instance
- * @param articleId - ID of the article
- */
-export async function getBiasScoresForArticle(
-  db: Db,
-  articleId: string
-): Promise<ArticleBiasScore[]> {
-  const existingScores: WithId<Document>[] = await db
-    .collection("biasScores")
-    .find({ articleId })
-    .toArray();
+/** ------------------------------ */
+/** 🔹 Main Function to Create Bias Scores for All Articles */
+/** ------------------------------ */
 
-  // If scores exist, map MongoDB documents to ArticleBiasScore type
-  if (existingScores.length > 0) {
-    return existingScores.map(score => ({
-      articleId: score.articleId,
-      scaleName: score.scaleName,
-      minLabel: score.minLabel,
-      maxLabel: score.maxLabel,
-      value: score.value,
-    }));
+export const createBiasScoresForAllArticles = async (dbName: string) => {
+  const db = await getDB(dbName);
+  const articles: Article[] = await fetchArticles();
+  const collection = db.collection("biasScores");
+
+  for (const article of articles) {
+    // Check if scores already exist
+    const exists = await collection.findOne({ articleId: article.id });
+    if (!exists) {
+      const scores = getDefaultBiasScores(article.id);
+      await collection.insertMany(scores);
+    }
   }
 
-  // Otherwise, generate default scores and insert into DB
-  const defaultScores = getScales(articleId);
-  await db.collection("biasScores").insertMany(
-    defaultScores.map(s => ({ ...s, submittedAt: new Date(), userId: null }))
-  );
+  console.log(`Bias scores ensured for ${articles.length} articles.`);
+  return articles.map(article => ({
+    ...article,
+    biasScores: getDefaultBiasScores(article.id)
+  }));
+};
 
-  return defaultScores;
-}
+/** ------------------------------ */
+/** 🔹 Helper to Fetch Articles from GNews API */
+/** ------------------------------ */
 
-/**
- * 4️⃣ Fetch articles and attach their bias scores
- * @param dbName - Name of the MongoDB database
- * @returns Array of articles with their bias scores
- */
-export async function updateMongoDB(dbName: string): Promise<ArticleWithScores[]> {
-  const db = await connectToMongoDB(dbName);
-  const articles = await fetchArticles();
-
-  // Attach bias scores to each article
-  const articlesWithScores = await Promise.all(
-    articles.map(async article => {
-      const biasScores = await getBiasScoresForArticle(db, article.id);
-      return { ...article, biasScores };
-    })
-  );
-
-  return articlesWithScores;
-}
+export const fetchArticles = async (): Promise<Article[]> => {
+  try {
+    const res = await fetch(GNEWS_ENDPOINT);
+    const data = await res.json();
+    return data.articles ?? [];
+  } catch {
+    return [];
+  }
+};

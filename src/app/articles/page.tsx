@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from "@/components/ui/card";
+import { BASE_URL } from "@/constants/constants";
 
 // Type definition for articles
 type Article = {
@@ -19,12 +20,8 @@ type Article = {
 // Fetches articles from the API
 async function fetchNewsArticles(): Promise<Article[]> {
 
-  // if its running on vercel, use `https://${process.env.VERCEL_URL}`, else use localhost
-  const baseUrl =
-  process.env.NEXT_PUBLIC_BASE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
-  const res = await fetch(`${baseUrl}/api/news`, { cache: "no-store" });
+  const res = await fetch(`${BASE_URL}/api/news`, { cache: "no-store" });
   if (!res.ok) {
     throw new Error("Failed to fetch news");
   }
