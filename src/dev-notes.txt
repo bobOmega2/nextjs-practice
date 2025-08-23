@@ -1,0 +1,19 @@
+===========================
+Dev Notes
+Date: 2025-08-23
+Session: 10:15 AM - 12:10 PM
+===========================
+
+✅ Today:
+- Reviewed article + bias score setup
+- Simplified helper functions
+- Clarified API routes (/api/news, /api/news/[id])
+- Planned MongoDB seeding for 10 articles
+- Bias scores should be created at start
+
+📝 Next Session:
+- SIMPLIFY EVERYTHING!!
+- Write seed script to populate MongoDB
+- Test API routes with seeded data
+- Connect page rendering to API
+
